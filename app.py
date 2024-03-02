@@ -34,7 +34,7 @@ def return_results():
     return str(x)
 
 def send_csv_file(csv_file):
-    url = "http://example.com/upload"  # Replace with the actual endpoint to send the CSV file
+    url = "https://synthspeechmodel.azurewebsites.net/predict"  # Replace with the actual endpoint to send the CSV file
     files = {'file': open(csv_file, 'rb')}
     response = requests.post(url, files=files)
     return response
@@ -60,12 +60,8 @@ def home():
         converted_files.append(resultFile)
     process_and_delete_audio(converted_files, output_csv_file, SAMPLE_RATE)
 
-    response = send_csv_file(output_csv_file)
-    if response.status_code == 200:
-        response_data = "CSV file sent successfully"
-    else:
-        response_data = "Failed to send CSV file"
-    return Response(response_data, status=200, mimetype='text/plain')  
+    response_data = send_csv_file(output_csv_file)
+    return Response(response_data, status=200, mimetype='application/json')  
 
 def allowed_file(filename):
     # Check if the file extension is allowed (optional)
