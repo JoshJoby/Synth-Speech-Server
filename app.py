@@ -61,7 +61,7 @@ def home():
     process_and_delete_audio(converted_files, output_csv_file, SAMPLE_RATE)
 
     response_data = send_csv_file(output_csv_file)
-    return Response(response_data, status=200, mimetype='text/plain')  
+    return Response(response_data, status=200, mimetype='application/json')  
 
 def allowed_file(filename):
     # Check if the file extension is allowed (optional)
