@@ -1,11 +1,12 @@
 from flask import Flask, Response, request
+import requests
 import os
 from convert_to_csv import Final_year
 from flask_cors import CORS
 import subprocess
 app = Flask(__name__)
 CORS(app)
-
+x = 0
 @app.route('/test', methods=["GET"])
 def test_get():
     return "Hi"
@@ -22,9 +23,21 @@ def upload_audio():
             else:
                 return 'Invalid audio file'
 
-        return 'Audio files uploaded successfully'
+        return return_results()
     except Exception as e:
-        return f'Error uploading audio: {str(e)}'
+        print(str(e) + "  Hii")
+        return f'{str(e)}'
+    
+def return_results():
+    global x
+    x+=1
+    return str(x)
+
+def send_csv_file(csv_file):
+    url = "http://example.com/upload"  # Replace with the actual endpoint to send the CSV file
+    files = {'file': open(csv_file, 'rb')}
+    response = requests.post(url, files=files)
+    return response
     
 def home():
     output_csv_file = "extracted_features_final.csv"
@@ -36,19 +49,22 @@ def home():
     if not track_files:
         response_data = "No audio files in the ./tracks directory"
         return Response(response_data, status=404, mimetype='text/plain')
-    c = 0
+
     converted_files = []
     for track_file in track_files:
         file_path = os.path.join('./tracks', track_file)
-        resultFile = "new_sample" + str(c) + ".mp3"
-        c += 1
+        resultFile = "new_sample" + str(len(converted_files)) + ".wav"
         ffmpeg_path = 'ffmpeg\\bin\\ffmpeg.exe'  
-        command = [ffmpeg_path, '-y', '-i', file_path, '-acodec', 'libmp3lame', resultFile]
+        command = [ffmpeg_path, '-y', '-i', file_path, '-acodec', 'pcm_s16le', '-ar', str(SAMPLE_RATE), resultFile]
         subprocess.run(command)
         converted_files.append(resultFile)
     process_and_delete_audio(converted_files, output_csv_file, SAMPLE_RATE)
 
-    response_data = "Features extracted and saved to 'extracted_features_final.csv'"
+    response = send_csv_file(output_csv_file)
+    if response.status_code == 200:
+        response_data = "CSV file sent successfully"
+    else:
+        response_data = "Failed to send CSV file"
     return Response(response_data, status=200, mimetype='text/plain')  
 
 def allowed_file(filename):
@@ -59,8 +75,7 @@ def allowed_file(filename):
 def process_and_delete_audio(file_paths, output_csv_file, SAMPLE_RATE):
     final_year_instance = Final_year()
     final_year_instance.save_features_to_csv(file_paths, output_csv_file, SAMPLE_RATE, num_cores=-1)
-    for file_path in file_paths:
-        os.remove(file_path)
+    file_paths.clear()
 
 
 if __name__ == '__main__':
