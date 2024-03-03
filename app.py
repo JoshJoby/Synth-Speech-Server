@@ -34,7 +34,7 @@ def return_results():
     return str(x)
 
 def send_csv_file(csv_file):
-    url = "https://synthspeechmodel.azurewebsites.net/predict"  # Replace with the actual endpoint to send the CSV file
+    url = "http://20.235.136.24/predict"  # Replace with the actual endpoint to send the CSV file
     files = {'file': open(csv_file, 'rb')}
     response = requests.post(url, files=files)
     return response
