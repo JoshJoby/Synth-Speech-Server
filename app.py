@@ -7,9 +7,15 @@ import subprocess
 app = Flask(__name__)
 CORS(app)
 x = 0
-@app.route('/test', methods=["GET"])
-def test_get():
-    return "Hi"
+@app.route('/test', methods=["POST"])
+def send_csv_file():
+    csv_file = "sample.csv"
+    url = "http://20.235.136.24/predict"  # Replace with the actual endpoint to send the CSV file
+    files = {'csv': open(csv_file, 'rb')}
+    response = requests.post(url, files=files)
+    return response
+# def test_get():
+#     return "Hi"
 
 @app.route('/upload_audio', methods=['POST'])
 def upload_audio():
@@ -35,8 +41,9 @@ def return_results():
 
 def send_csv_file(csv_file):
     url = "http://20.235.136.24/predict"  # Replace with the actual endpoint to send the CSV file
-    files = {'file': open(csv_file, 'rb')}
+    files = {'csv': open(csv_file, 'rb')}
     response = requests.post(url, files=files)
+    print(response)
     return response
     
 def home():
