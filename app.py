@@ -10,7 +10,7 @@ x = 0
 @app.route('/test', methods=["POST"])
 def send_csv_file():
     csv_file = "sample.csv"
-    url = "http://20.235.130.72/predict"  # Replace with the actual endpoint to send the CSV file
+    url = "http://20.235.44.88/predict"  # Replace with the actual endpoint to send the CSV file
     files = {'csv': open(csv_file, 'rb')}
     response = requests.post(url, files=files)
     return response
