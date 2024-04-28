@@ -7,44 +7,41 @@ import subprocess
 app = Flask(__name__)
 CORS(app)
 x = 0
-@app.route('/test', methods=["POST"])
-def send_csv_file():
-    csv_file = "sample.csv"
-    url = "http://20.235.44.88/predict"  # Replace with the actual endpoint to send the CSV file
-    files = {'csv': open(csv_file, 'rb')}
-    response = requests.post(url, files=files)
-    return response
+# @app.route('/test', methods=["POST"])
+# def send_csv_file():
+#     csv_file = "sample.csv"
+#     url = "http://127.0.0.1:8081"  # Replace with the actual endpoint to send the CSV file
+#     files = {'csv': open(csv_file, 'rb')}
+#     response = requests.post(url, files=files)
+#     return response
 # def test_get():
 #     return "Hi"
 
 @app.route('/upload_audio', methods=['POST'])
 def upload_audio():
+    results = ""
     try:
         uploaded_files = request.files.getlist('audioFiles')
 
         for audio_file in uploaded_files:
             if audio_file and allowed_file(audio_file.filename):
                 audio_file.save('./tracks/' + audio_file.filename)
-                home()
+                results = home()
             else:
                 return 'Invalid audio file'
 
-        return return_results()
+        return results
     except Exception as e:
         print(str(e) + "  Hii")
         return f'{str(e)}'
-    
-def return_results():
-    global x
-    x+=1
-    return str(x)
+
 
 def send_csv_file(csv_file):
-    url = "http://20.235.136.24/predict"  # Replace with the actual endpoint to send the CSV file
+    url = "http://127.0.0.1:8081/predict"  # Replace with the actual endpoint to send the CSV file
     files = {'csv': open(csv_file, 'rb')}
     response = requests.post(url, files=files)
-    print(response)
-    return response
+    # print(response.text)
+    return response.text
     
 def home():
     output_csv_file = "extracted_features_final.csv"
@@ -68,7 +65,8 @@ def home():
     process_and_delete_audio(converted_files, output_csv_file, SAMPLE_RATE)
 
     response_data = send_csv_file(output_csv_file)
-    return Response(response_data, status=200, mimetype='application/json')  
+    print(response_data)
+    return Response(response_data, status=200)  
 
 def allowed_file(filename):
     # Check if the file extension is allowed (optional)
