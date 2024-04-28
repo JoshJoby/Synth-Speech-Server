@@ -37,7 +37,7 @@ def upload_audio():
 
 
 def send_csv_file(csv_file):
-    url = "http://127.0.0.1:8081/predict"  # Replace with the actual endpoint to send the CSV file
+    url = "https://20.235.44.88/predict"  # Replace with the actual endpoint to send the CSV file
     files = {'csv': open(csv_file, 'rb')}
     response = requests.post(url, files=files)
     # print(response.text)
