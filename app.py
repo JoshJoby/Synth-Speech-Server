@@ -32,7 +32,7 @@ def upload_audio():
 
         return results
     except Exception as e:
-        print(str(e) + "  Hii")
+        print("Hii " + str(e))
         return f'{str(e)}'
 
 
